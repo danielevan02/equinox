@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CircleUserRound, TextAlignJustify } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 import { setCookie } from "@/lib/cookies";
 
@@ -22,11 +22,19 @@ type Props = {
 export default function Header({ onClickMenu }: Props) {
   const t = useTranslations("common");
   const router = useRouter();
+  const locale = useLocale();
+  const [currentLocale, setCurrentLocale] = useState(locale);
 
-  const handleLanguageChange = async (locale: string) => {
-    await setCookie("locale", locale);
+  useEffect(() => {
+    setCurrentLocale(locale);
+  }, [locale]);
+
+  const handleLanguageChange = async (newLocale: string) => {
+    setCurrentLocale(newLocale);
+    await setCookie("locale", newLocale);
     router.refresh();
   };
+
   const languages = [
     { title: t("indonesia"), value: "id", flag: "🇮🇩"},
     { title: t("english"), value: "en", flag: "🇬🇧" },
@@ -38,7 +46,7 @@ export default function Header({ onClickMenu }: Props) {
       </button>
 
       <div className="flex items-center gap-3">
-        <Select onValueChange={handleLanguageChange}>
+        <Select value={currentLocale} onValueChange={handleLanguageChange}>
           <SelectTrigger className="w-44">
             <SelectValue placeholder="Select a language" />
           </SelectTrigger>
