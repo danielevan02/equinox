@@ -1,0 +1,55 @@
+{
+  "nav": {
+    "products": "Produk",
+    "berries": "Berries",
+    "detail": "Detail"
+  },
+  "common": {
+    "search": "Cari...",
+    "add": "Tambah",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "loading": "Memuat...",
+    "noData": "Tidak ada data",
+    "actions": "Aksi",
+    "detail": "Detail",
+    "go": "Lanjut",
+    "select": "Pilih",
+    "name": "Nama",
+    "no": "No",
+    "indonesia": "Indonesia",
+    "english": "Inggris"
+  },
+  "table": {
+    "itemsPerPage": "Item per halaman",
+    "showing": "Menampilkan",
+    "to": "sampai",
+    "of": "dari",
+    "results": "hasil",
+    "previous": "Sebelumnya",
+    "next": "Selanjutnya"
+  },
+  "product": {
+    "title": "Produk",
+    "addProduct": "Tambah Produk",
+    "editProduct": "Edit Produk",
+    "deleteConfirm": "Apakah Anda yakin ingin menghapus produk ini?",
+    "productAdded": "Produk berhasil ditambahkan!",
+    "productUpdated": "Produk berhasil diperbarui!",
+    "productDeleted": "Produk berhasil dihapus!",
+    "fields": {
+      "title": "Judul",
+      "price": "Harga",
+      "description": "Deskripsi",
+      "category": "Kategori",
+      "image": "URL Gambar"
+    }
+  },
+  "berry": {
+    "title": "Berries",
+    "selectBerry": "Pilih berry",
+    "berryDetail": "Detail Berry"
+  }
+}
