@@ -1,6 +1,7 @@
+import { BerryApiResponse } from "@/types/berry";
 import { Product } from "@/types/product";
 
-export const BERRY_API = 'https://pokeapi.co/api/v2/berry/';
+const BERRY_API = 'https://pokeapi.co/api/v2/berry/';
 const PRODUCT_API = 'https://fakestoreapi.com/products';
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -13,3 +14,19 @@ export async function fetchProducts(): Promise<Product[]> {
     return []
   }
 }
+
+// Berry API
+export const fetchBerries = async (
+  limit: number = 20,
+  offset: number = 0
+): Promise<BerryApiResponse> => {
+  const response = await fetch(`${BERRY_API}?limit=${limit}&offset=${offset}`);
+  const data = await response.json()
+  return data;
+};
+
+export const fetchBerryDetail = async (name: string) => {
+  const response = await fetch(`${BERRY_API}${name}`);
+  const data = await response.json()
+  return data;
+};
