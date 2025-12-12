@@ -50,6 +50,18 @@
   "berry": {
     "title": "Berries",
     "selectBerry": "Pilih berry",
-    "berryDetail": "Detail Berry"
+    "berryDetail": "Detail Berry",
+    "detailTitle": "Detail Berry",
+    "selectBerryPrompt": "Klik 'Lanjut' untuk melihat detail berry",
+    "name": "Nama",
+    "id": "ID",
+    "growthTime": "Waktu Tumbuh",
+    "maxHarvest": "Panen Maksimal",
+    "size": "Ukuran",
+    "smoothness": "Kehalusan",
+    "soilDryness": "Kekeringan Tanah",
+    "naturalGiftPower": "Kekuatan Hadiah Alami",
+    "firmness": "Kekerasan",
+    "flavors": "Rasa"
   }
 }
