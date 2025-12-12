@@ -44,7 +44,18 @@
       "price": "Harga",
       "description": "Deskripsi",
       "category": "Kategori",
-      "image": "URL Gambar"
+      "image": "URL Gambar",
+      "count": "Jumlah",
+      "rate": "Rating"
+    },
+    "placeholders": {
+      "title": "masukkan judul produk...",
+      "price": "masukkan harga produk...",
+      "description": "masukkan deskripsi produk...",
+      "category": "masukkan kategori produk...",
+      "image": "masukkan gambar produk...",
+      "count": "masukkan jumlah produk...",
+      "rate": "masukkan rating produk..."
     }
   },
   "berry": {
