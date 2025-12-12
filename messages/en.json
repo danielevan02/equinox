@@ -44,7 +44,18 @@
       "price": "Price",
       "description": "Description",
       "category": "Category",
-      "image": "Image URL"
+      "image": "Image URL",
+      "count": "Count",
+      "rate": "Rate"
+    },
+    "placeholders": {
+      "title": "enter product title...",
+      "price": "enter product price...",
+      "description": "enter product description...",
+      "category": "enter product category...",
+      "image": "enter product image...",
+      "count": "enter product count...",
+      "rate": "enter product rate..."
     }
   },
   "berry": {

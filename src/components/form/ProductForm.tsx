@@ -21,6 +21,7 @@ import { Label } from "../ui/label";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Product } from "@/types/product";
+import { useTranslations } from "next-intl";
 
 const productSchema = z.object({
   title: z.string("Please enter string").min(1, "Please enter name for this product"),
@@ -40,55 +41,55 @@ type FormFieldName = "title" | "category" | "description" | "price" | "image" | 
 
 interface FormFieldConfig {
   name: FormFieldName;
-  label: string;
-  placeholder: string;
+  labelKey: string;
+  placeholderKey: string;
   type: "text" | "number";
 }
 
-const formFields: FormFieldConfig[] = [
+const formFieldsConfig: FormFieldConfig[] = [
   {
     name: "title",
-    label: "Title",
-    placeholder: "enter product title...",
+    labelKey: "product.fields.title",
+    placeholderKey: "product.placeholders.title",
     type: "text",
   },
   {
     name: "category",
-    label: "Category",
-    placeholder: "enter product category...",
+    labelKey: "product.fields.category",
+    placeholderKey: "product.placeholders.category",
     type: "text",
   },
   {
     name: "description",
-    label: "Description",
-    placeholder: "enter product description...",
+    labelKey: "product.fields.description",
+    placeholderKey: "product.placeholders.description",
     type: "text",
   },
   {
     name: "price",
-    label: "Price",
-    placeholder: "enter product price...",
+    labelKey: "product.fields.price",
+    placeholderKey: "product.placeholders.price",
     type: "number",
   },
   {
     name: "image",
-    label: "Image",
-    placeholder: "enter product image...",
+    labelKey: "product.fields.image",
+    placeholderKey: "product.placeholders.image",
     type: "text",
   },
 ];
 
-const ratingFields: FormFieldConfig[] = [
+const ratingFieldsConfig: FormFieldConfig[] = [
   {
     name: "rating.count",
-    label: "Count",
-    placeholder: "enter product count...",
+    labelKey: "product.fields.count",
+    placeholderKey: "product.placeholders.count",
     type: "number",
   },
   {
     name: "rating.rate",
-    label: "Rate",
-    placeholder: "enter product rate...",
+    labelKey: "product.fields.rate",
+    placeholderKey: "product.placeholders.rate",
     type: "number",
   },
 ];
@@ -96,6 +97,7 @@ const ratingFields: FormFieldConfig[] = [
 export default function ProductForm({ productId }: { productId?: number }) {
   const { addProduct, getProductById, updateProduct } = useProductStore();
   const router = useRouter();
+  const t = useTranslations();
   const form = useForm<ProductType>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -143,7 +145,7 @@ export default function ProductForm({ productId }: { productId?: number }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
         <div className="flex flex-col gap-2">
           {/* Main form fields */}
-          {formFields.map((fieldConfig) => (
+          {formFieldsConfig.map((fieldConfig) => (
             <FormField
               key={fieldConfig.name}
               control={form.control}
@@ -153,11 +155,11 @@ export default function ProductForm({ productId }: { productId?: number }) {
                   <FormLabel />
                   <FormControl>
                     <div className="flex flex-col gap-2">
-                      <Label>{fieldConfig.label}</Label>
+                      <Label>{t(fieldConfig.labelKey)}</Label>
                       {fieldConfig.type === "number" ? (
                         <Input
                           type="number"
-                          placeholder={fieldConfig.placeholder}
+                          placeholder={t(fieldConfig.placeholderKey)}
                           onChange={(e) => field.onChange(parseFloat(e.target.value))}
                           value={field.value || ""}
                           name={field.name}
@@ -165,7 +167,7 @@ export default function ProductForm({ productId }: { productId?: number }) {
                           onBlur={field.onBlur}
                         />
                       ) : (
-                        <Input placeholder={fieldConfig.placeholder} {...field} />
+                        <Input placeholder={t(fieldConfig.placeholderKey)} {...field} />
                       )}
                     </div>
                   </FormControl>
@@ -178,7 +180,7 @@ export default function ProductForm({ productId }: { productId?: number }) {
 
           {/* Rating fields */}
           <div className="flex gap-1 justify-between">
-            {ratingFields.map((fieldConfig) => (
+            {ratingFieldsConfig.map((fieldConfig) => (
               <FormField
                 key={fieldConfig.name}
                 control={form.control}
@@ -188,10 +190,10 @@ export default function ProductForm({ productId }: { productId?: number }) {
                     <FormLabel />
                     <FormControl>
                       <div className="flex flex-col gap-2">
-                        <Label>{fieldConfig.label}</Label>
+                        <Label>{t(fieldConfig.labelKey)}</Label>
                         <Input
                           type="number"
-                          placeholder={fieldConfig.placeholder}
+                          placeholder={t(fieldConfig.placeholderKey)}
                           onChange={(e) => field.onChange(parseFloat(e.target.value))}
                           value={field.value || ""}
                           name={field.name}
