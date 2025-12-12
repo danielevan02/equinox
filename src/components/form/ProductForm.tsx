@@ -36,6 +36,63 @@ const productSchema = z.object({
 
 type ProductType = z.infer<typeof productSchema>;
 
+type FormFieldName = "title" | "category" | "description" | "price" | "image" | "rating.count" | "rating.rate";
+
+interface FormFieldConfig {
+  name: FormFieldName;
+  label: string;
+  placeholder: string;
+  type: "text" | "number";
+}
+
+const formFields: FormFieldConfig[] = [
+  {
+    name: "title",
+    label: "Title",
+    placeholder: "enter product title...",
+    type: "text",
+  },
+  {
+    name: "category",
+    label: "Category",
+    placeholder: "enter product category...",
+    type: "text",
+  },
+  {
+    name: "description",
+    label: "Description",
+    placeholder: "enter product description...",
+    type: "text",
+  },
+  {
+    name: "price",
+    label: "Price",
+    placeholder: "enter product price...",
+    type: "number",
+  },
+  {
+    name: "image",
+    label: "Image",
+    placeholder: "enter product image...",
+    type: "text",
+  },
+];
+
+const ratingFields: FormFieldConfig[] = [
+  {
+    name: "rating.count",
+    label: "Count",
+    placeholder: "enter product count...",
+    type: "number",
+  },
+  {
+    name: "rating.rate",
+    label: "Rate",
+    placeholder: "enter product rate...",
+    type: "number",
+  },
+];
+
 export default function ProductForm({ productId }: { productId?: number }) {
   const { addProduct, getProductById, updateProduct } = useProductStore();
   const router = useRouter();
@@ -85,152 +142,70 @@ export default function ProductForm({ productId }: { productId?: number }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col">
         <div className="flex flex-col gap-2">
-          <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel />
-                <FormControl>
-                  <div className="flex flex-col gap-2">
-                    <Label>Title</Label>
-                    <Input placeholder="enter product title..." {...field} />
-                  </div>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Main form fields */}
+          {formFields.map((fieldConfig) => (
+            <FormField
+              key={fieldConfig.name}
+              control={form.control}
+              name={fieldConfig.name as "title" | "category" | "description" | "price" | "image"}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel />
+                  <FormControl>
+                    <div className="flex flex-col gap-2">
+                      <Label>{fieldConfig.label}</Label>
+                      {fieldConfig.type === "number" ? (
+                        <Input
+                          type="number"
+                          placeholder={fieldConfig.placeholder}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          value={field.value || ""}
+                          name={field.name}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                        />
+                      ) : (
+                        <Input placeholder={fieldConfig.placeholder} {...field} />
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
 
-          <FormField
-            control={form.control}
-            name="category"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel />
-                <FormControl>
-                  <div className="flex flex-col gap-2">
-                    <Label>Category</Label>
-                    <Input placeholder="enter product category..." {...field} />
-                  </div>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel />
-                <FormControl>
-                  <div className="flex flex-col gap-2">
-                    <Label>Description</Label>
-                    <Input placeholder="enter product description..." {...field} />
-                  </div>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="price"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel />
-                <FormControl>
-                  <div className="flex flex-col gap-2">
-                    <Label>Price</Label>
-                    <Input
-                      type="number"
-                      placeholder="enter product price..."
-                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                      value={field.value || ""}
-                      name={field.name}
-                      ref={field.ref}
-                      onBlur={field.onBlur}
-                    />
-                  </div>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="image"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel />
-                <FormControl>
-                  <div className="flex flex-col gap-2">
-                    <Label>Image</Label>
-                    <Input placeholder="enter product image..." {...field} />
-                  </div>
-                </FormControl>
-                <FormDescription />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Rating fields */}
           <div className="flex gap-1 justify-between">
-            <FormField
-              control={form.control}
-              name="rating.count"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel />
-                  <FormControl>
-                    <div className="flex flex-col gap-2">
-                      <Label>Count</Label>
-                      <Input
-                        type="number"
-                        placeholder="enter product count..."
-                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                        value={field.value || ""}
-                        name={field.name}
-                        ref={field.ref}
-                        onBlur={field.onBlur}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rating.rate"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel />
-                  <FormControl>
-                    <div className="flex flex-col gap-2">
-                      <Label>Rate</Label>
-                      <Input
-                        type="number"
-                        placeholder="enter product rate..."
-                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                        value={field.value || ""}
-                        name={field.name}
-                        ref={field.ref}
-                        onBlur={field.onBlur}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {ratingFields.map((fieldConfig) => (
+              <FormField
+                key={fieldConfig.name}
+                control={form.control}
+                name={fieldConfig.name as "rating.count" | "rating.rate"}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel />
+                    <FormControl>
+                      <div className="flex flex-col gap-2">
+                        <Label>{fieldConfig.label}</Label>
+                        <Input
+                          type="number"
+                          placeholder={fieldConfig.placeholder}
+                          onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                          value={field.value || ""}
+                          name={field.name}
+                          ref={field.ref}
+                          onBlur={field.onBlur}
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ))}
           </div>
         </div>
         <div className="flex gap-2">

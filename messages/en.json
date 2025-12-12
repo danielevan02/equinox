@@ -50,6 +50,18 @@
   "berry": {
     "title": "Berries",
     "selectBerry": "Select a berry",
-    "berryDetail": "Berry Detail"
+    "berryDetail": "Berry Detail",
+    "detailTitle": "Berry Details",
+    "selectBerryPrompt": "Click 'Go' to view berry details",
+    "name": "Name",
+    "id": "ID",
+    "growthTime": "Growth Time",
+    "maxHarvest": "Max Harvest",
+    "size": "Size",
+    "smoothness": "Smoothness",
+    "soilDryness": "Soil Dryness",
+    "naturalGiftPower": "Natural Gift Power",
+    "firmness": "Firmness",
+    "flavors": "Flavors"
   }
 }

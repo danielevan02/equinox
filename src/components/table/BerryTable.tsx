@@ -18,6 +18,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { useBerryStore } from "@/stores/useBerryStore";
 import { Berry } from "@/types/berry";
 import { fetchBerries } from "@/services/api";
+import BerryDetailDialog from "../dialog/BerryDetailDialog";
 
 export default function BerryTable() {
   const t = useTranslations();
@@ -25,6 +26,8 @@ export default function BerryTable() {
   const [berries, setBerries] = useState<Berry[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedBerry, setSelectedBerry] = useState<Berry | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -34,7 +37,7 @@ export default function BerryTable() {
         const data = await fetchBerries(100, 0); // Fetch more berries
         setBerries(data.results);
       } catch (error) {
-        console.error('Error fetching berries:', error);
+        console.error("Error fetching berries:", error);
       } finally {
         setLoading(false);
       }
@@ -48,9 +51,7 @@ export default function BerryTable() {
 
     // Search filter
     if (search) {
-      result = result.filter((berry) =>
-        berry.name.toLowerCase().includes(search.toLowerCase())
-      );
+      result = result.filter((berry) => berry.name.toLowerCase().includes(search.toLowerCase()));
     }
 
     // Sort by name ascending
@@ -66,7 +67,12 @@ export default function BerryTable() {
   }, [filteredAndSortedBerries, page, pageSize]);
 
   const totalPages = Math.ceil(filteredAndSortedBerries.length / pageSize);
-  
+
+  const handleViewBerry = (berry: Berry) => {
+    setSelectedBerry(berry);
+    setDialogOpen(true);
+  };
+
   if (!mounted) {
     return (
       <div className="flex flex-col flex-1">
@@ -125,53 +131,51 @@ export default function BerryTable() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <div className="border rounded-lg mt-5 overflow-hidden">
-        <div className="flex-1 overflow-auto max-h-96">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-5">{t("common.no")}</TableHead>
-                <TableHead>{t("common.name")}</TableHead>
-                <TableHead className="w-10">{t("common.actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                [...Array(6)].map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="w-full h-10" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="w-full h-10" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="w-full h-10" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : berries.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center">
-                    {t("common.noData")}
+      <div className="border rounded-lg mt-5 overflow-scroll max-h-96 md:max-h-[700px] lg:max-h-[300px] xl:max-h-[600px] flex-1 flex flex-col">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-5">{t("common.no")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead className="w-10">{t("common.actions")}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              [...Array(6)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="w-full h-10" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="w-full h-10" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="w-full h-10" />
                   </TableCell>
                 </TableRow>
-              ) : (
-                paginatedBerries.map((berry, i) => (
-                  <TableRow key={i}>
-                    <TableCell className="font-medium">{(page - 1) * pageSize + i + 1}</TableCell>
-                    <TableCell className="max-w-16 truncate">{berry.name}</TableCell>
-                    <TableCell className="flex gap-2">
-                      <Button variant="ghost">
-                        <Eye/>
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+              ))
+            ) : berries.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center">
+                  {t("common.noData")}
+                </TableCell>
+              </TableRow>
+            ) : (
+              paginatedBerries.map((berry, i) => (
+                <TableRow key={i}>
+                  <TableCell className="font-medium">{(page - 1) * pageSize + i + 1}</TableCell>
+                  <TableCell className="max-w-16 truncate">{berry.name}</TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button variant="ghost" onClick={() => handleViewBerry(berry)}>
+                      <Eye />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
       <div className="flex items-center justify-between mt-5">
         <div className="flex flex-col md:flex-row items-center gap-2">
@@ -214,6 +218,16 @@ export default function BerryTable() {
           </div>
         </div>
       </div>
+
+      {/* Berry Detail Dialog */}
+      {selectedBerry && (
+        <BerryDetailDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          berries={filteredAndSortedBerries}
+          defaultBerry={selectedBerry}
+        />
+      )}
     </div>
   );
 }

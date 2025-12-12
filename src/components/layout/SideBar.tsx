@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { X } from "lucide-react";
+import { Cherry, Package, X } from "lucide-react";
 import React from "react";
 import {
   Select,
@@ -25,8 +25,8 @@ export default function SideBar({ onClickX: onClickMenu, open }: SideBarProps) {
   const path = usePathname();
   const t = useTranslations("nav")
   const navItem = [
-    { title: t("products"), href: "/products" },
-    { title: t("berries"), href: "/berries" },
+    { title: t("products"), href: "/products", Icon: Package },
+    { title: t("berries"), href: "/berries", Icon: Cherry },
   ];
   return (
     <nav
@@ -58,9 +58,12 @@ export default function SideBar({ onClickX: onClickMenu, open }: SideBarProps) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={cn("p-2 w-full rounded-lg hover:bg-neutral-200 transition-all", path.startsWith(item.href) && "bg-neutral-200")}
+                className={cn("p-2 w-full rounded-lg hover:bg-neutral-200 transition-all flex items-center gap-2", path.startsWith(item.href) && "bg-neutral-200")}
               >
-                {item.title}
+                <item.Icon strokeWidth={1} className="size-5"/>
+                <span className="text-sm">
+                  {item.title}
+                </span>
               </Link>
             ))}
           </div>
