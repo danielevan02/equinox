@@ -7,15 +7,12 @@ interface ProductStore {
   products: Product[];
   loading: boolean;
   error: string | null;
-  search: string;
   fetchProducts: () => Promise<void>;
   setProducts: (products: Product[]) => void;
   addProduct: (product: Product) => void;
   updateProduct: (id: number, product: Product) => void;
   deleteProduct: (id: number) => void;
   getProductById: (id: number) => Product | undefined;
-  setSearch: (search: string) => void;
-  getFilteredProducts: () => Product[];
 }
 
 export const useProductStore = create<ProductStore>()(
@@ -23,7 +20,6 @@ export const useProductStore = create<ProductStore>()(
     (set, get) => ({
       products: [],
       loading: false,
-      search: "",
       error: null,
       fetchProducts: async () => {
         set({ loading: true, error: null });
@@ -48,14 +44,6 @@ export const useProductStore = create<ProductStore>()(
           products: state.products.filter((p) => p.id !== id),
         })),
       getProductById: (id) => get().products.find((p) => p.id === id),
-      setSearch: (search) => set({ search }),
-      getFilteredProducts: () => {
-        const { products, search } = get();
-        if (!search) return products;
-        return products.filter((p) =>
-          p.title.toLowerCase().includes(search.toLowerCase())
-        );
-      }
     }),
     {
       name: "product-storage",
