@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Pencil, Plus, Trash } from "lucide-react";
@@ -17,12 +17,14 @@ import { Skeleton } from "../ui/skeleton";
 import { useProductStore } from "@/stores/useProductStore";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useTableStore } from "@/stores/useTableStore";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 export default function ProductTable() {
-  const { loading, fetchProducts, search, setSearch, getFilteredProducts, deleteProduct } = useProductStore();
-  const t = useTranslations("common");
+  const { loading, products, fetchProducts, deleteProduct } = useProductStore();
+  const { page, pageSize, search, sortOrder, setPage, setPageSize, setSearch } = useTableStore();
+  const t = useTranslations();
   const [mounted, setMounted] = useState(false);
-  const products = getFilteredProducts();
 
   useEffect(() => {
     setMounted(true);
@@ -31,19 +33,54 @@ export default function ProductTable() {
     }
   }, []);
 
+  const filteredAndSortedProducts = useMemo(() => {
+    let result = [...products];
+
+    // Search filter
+    if (search) {
+      result = result.filter((product) =>
+        product.title.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    // Sort by name
+    result.sort((a, b) => {
+      if (sortOrder === "asc") {
+        return a.title.localeCompare(b.title);
+      }
+      return b.title.localeCompare(a.title);
+    });
+
+    return result;
+  }, [products, search, sortOrder]);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    return filteredAndSortedProducts.slice(start, end);
+  }, [filteredAndSortedProducts, page, pageSize]);
+
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / pageSize);
+
   const handleDeleteProduct = (id: number) => {
-    deleteProduct(id)
-    toast.success("Delete successful")
-  }
+    deleteProduct(id);
+    toast.success("Delete successful");
+  };
 
   if (!mounted) {
     return (
       <div className="flex flex-col flex-1">
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-2">
-          <Input placeholder={t("search")} className="md:max-w-52" value="" disabled readOnly />
+          <Input
+            placeholder={t("common.search")}
+            className="md:max-w-52"
+            value=""
+            disabled
+            readOnly
+          />
           <Button className="uppercase" disabled>
             <Plus />
-            {t("add")}
+            {t("common.add")}
           </Button>
         </div>
         <div className="border rounded-lg mt-5 overflow-hidden">
@@ -51,9 +88,9 @@ export default function ProductTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-5">{t("no")}</TableHead>
-                  <TableHead>{t("name")}</TableHead>
-                  <TableHead className="w-10">{t("actions")}</TableHead>
+                  <TableHead className="w-5">{t("common.no")}</TableHead>
+                  <TableHead>{t("common.name")}</TableHead>
+                  <TableHead className="w-10">{t("common.actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -82,7 +119,7 @@ export default function ProductTable() {
     <div className="flex flex-col flex-1">
       <div className="flex flex-col-reverse md:flex-row md:justify-between gap-2">
         <Input
-          placeholder={t("search")}
+          placeholder={t("common.search")}
           className="md:max-w-52"
           value={search || ""}
           onChange={(e) => setSearch(e.target.value)}
@@ -90,7 +127,7 @@ export default function ProductTable() {
         <Button className="uppercase" asChild>
           <Link href="/products/add">
             <Plus />
-            {t("add")}
+            {t("common.add")}
           </Link>
         </Button>
       </div>
@@ -99,9 +136,9 @@ export default function ProductTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-5">{t("no")}</TableHead>
-                <TableHead>{t("name")}</TableHead>
-                <TableHead className="w-10">{t("actions")}</TableHead>
+                <TableHead className="w-5">{t("common.no")}</TableHead>
+                <TableHead>{t("common.name")}</TableHead>
+                <TableHead className="w-10">{t("common.actions")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -122,24 +159,22 @@ export default function ProductTable() {
               ) : products.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center">
-                    {t("noData")}
+                    {t("common.noData")}
                   </TableCell>
                 </TableRow>
               ) : (
-                products.map((product, i) => (
+                paginatedProducts.map((product, i) => (
                   <TableRow key={product.id}>
-                    <TableCell className="font-medium">{i + 1}</TableCell>
-                    <TableCell className="max-w-16 truncate">
-                      {product.title}
-                    </TableCell>
+                    <TableCell className="font-medium">{(page - 1) * pageSize + i + 1}</TableCell>
+                    <TableCell className="max-w-16 truncate">{product.title}</TableCell>
                     <TableCell className="flex gap-2">
                       <Button variant="outline">
                         <Link href={`/products/${product.id}`}>
-                          <Pencil/>
+                          <Pencil />
                         </Link>
                       </Button>
-                      <Button onClick={()=>handleDeleteProduct(product.id)} variant="destructive">
-                        <Trash/>
+                      <Button onClick={() => handleDeleteProduct(product.id)} variant="destructive">
+                        <Trash />
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -149,8 +184,46 @@ export default function ProductTable() {
           </Table>
         </div>
       </div>
-      <div>
-        
+      <div className="flex items-center justify-between mt-5">
+        <div className="flex flex-col md:flex-row items-center gap-2">
+          <span className="text-sm text-gray-600">{t("table.itemsPerPage")}:</span>
+          <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+            <SelectTrigger className="w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="10">10</SelectItem>
+              <SelectItem value="30">30</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center gap-2">
+          <span className="text-sm text-gray-600">
+            {t("table.showing")} {(page - 1) * pageSize + 1} {t("table.to")}{" "}
+            {Math.min(page * pageSize, filteredAndSortedProducts.length)} {t("table.of")}{" "}
+            {filteredAndSortedProducts.length} {t("table.results")}
+          </span>
+          <div className="flex gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              {t("table.previous")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages || totalPages === 0}
+            >
+              {t("table.next")}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
