@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import MainLayout from "@/components/layout/MainLayout";
+import { Toaster } from "sonner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <NextIntlClientProvider>
           <MainLayout>
             {children}
+            <Toaster position="top-center"/>
           </MainLayout>
         </NextIntlClientProvider>
       </body>

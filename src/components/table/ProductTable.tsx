@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   Table,
@@ -15,17 +15,26 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "../ui/skeleton";
 import { useProductStore } from "@/stores/useProductStore";
+import Link from "next/link";
+import { toast } from "sonner";
 
 export default function ProductTable() {
-  const { loading, fetchProducts, search, setSearch, getFilteredProducts } = useProductStore();
+  const { loading, fetchProducts, search, setSearch, getFilteredProducts, deleteProduct } = useProductStore();
   const t = useTranslations("common");
   const [mounted, setMounted] = useState(false);
   const products = getFilteredProducts();
 
   useEffect(() => {
     setMounted(true);
-    fetchProducts();
-  }, [fetchProducts]);
+    if (products.length === 0) {
+      fetchProducts();
+    }
+  }, []);
+
+  const handleDeleteProduct = (id: number) => {
+    deleteProduct(id)
+    toast.success("Delete successful")
+  }
 
   if (!mounted) {
     return (
@@ -78,9 +87,11 @@ export default function ProductTable() {
           value={search || ""}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button className="uppercase">
-          <Plus />
-          {t("add")}
+        <Button className="uppercase" asChild>
+          <Link href="/products/add">
+            <Plus />
+            {t("add")}
+          </Link>
         </Button>
       </div>
       <div className="border rounded-lg mt-5 overflow-hidden">
@@ -121,7 +132,16 @@ export default function ProductTable() {
                     <TableCell className="max-w-16 truncate">
                       {product.title}
                     </TableCell>
-                    <TableCell></TableCell>
+                    <TableCell className="flex gap-2">
+                      <Button variant="outline">
+                        <Link href={`/products/${product.id}`}>
+                          <Pencil/>
+                        </Link>
+                      </Button>
+                      <Button onClick={()=>handleDeleteProduct(product.id)} variant="destructive">
+                        <Trash/>
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))
               )}
