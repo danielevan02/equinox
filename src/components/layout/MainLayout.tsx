@@ -34,7 +34,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <Header onClickMenu={() => setOpen((prev) => !prev)}/>
 
           {/* PAGE */}
-          <div className="flex-1 p-1 md:p-3">
+          <div className="flex-1 p-2 md:p-3">
             {children}
           </div>
 
